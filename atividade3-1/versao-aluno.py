@@ -1,5 +1,6 @@
 from turtle import *
 import random
+from time import sleep
 
 t = Turtle()
 
