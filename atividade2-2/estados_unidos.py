@@ -41,7 +41,7 @@ for lado in range(2):
     t.rt(90)
 t.end_fill()
 
-#Desenhando a grade de estrelas dentro do cantao
+#Desenhando a grade de estrelas dentro do canto
 linhas = 4
 colunas = 5
 espaco_x = largura_canto / (colunas + 1)
