@@ -40,7 +40,7 @@ def eleva_ao_quadrado(x):
 def raiz_quadrada(x):
     return x ** 0.5
 
-def x_sobre_1(x):
+def um_sobre_x(x):
     return 1 / x
 
 def potencia_de_2(x):
@@ -98,17 +98,17 @@ t.color("purple")
 
 # x sendo negativo
 t.pu()
-t.goto(10 * -40, 200 * x_sobre_1(-40))
+t.goto(10 * -40, 200 * um_sobre_x(-40))
 t.pd()
 for x in range(-40, 0):
-    t.goto(10 * x, 200 * x_sobre_1(x))
+    t.goto(10 * x, 200 * um_sobre_x(x))
 
 # x sendo positivo
 t.pu()
-t.goto(10 * 1, 200 * x_sobre_1(1))
+t.goto(10 * 1, 200 * um_sobre_x(1))
 t.pd()
 for x in range(1, 41):
-    t.goto(10 * x, 200 * x_sobre_1(x))
+    t.goto(10 * x, 200 * um_sobre_x(x))
 
 limpar_tela()
 
