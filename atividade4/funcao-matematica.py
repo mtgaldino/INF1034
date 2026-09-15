@@ -141,7 +141,7 @@ limpar_tela()
 # E.
 
 # - y = x^2 - 5x + 6
-t.color("navy")
+t.color("yellow")
 t.pu()
 t.goto(10 * -15, fn_quadratica(-15))
 t.pd()
@@ -154,7 +154,7 @@ limpar_tela()
 # F.
 
 # - y = x^3 - x^2 - x + 1
-t.color("magenta")
+t.color("pink")
 t.pu()
 t.goto(40 * -7, fn_cubica(-7))
 t.pd()
