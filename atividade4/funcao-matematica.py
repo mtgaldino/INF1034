@@ -37,8 +37,6 @@ def soma_10(x):
 def eleva_ao_quadrado(x):
     return x ** 2
 
-<<<<<<< HEAD
-=======
 def raiz_quadrada(x):
     return x ** 0.5
 
@@ -57,7 +55,6 @@ def fn_quadratica(x):
 def fn_cubica(x):
     return x ** 3 - x ** 2 - x + 1
 
->>>>>>> 5809dadad5d88cafe5188e72875fcff7335c2d16
 # === programa ===
 desenhar_plano_cartesiano()
 
@@ -73,25 +70,6 @@ limpar_tela()
 
 t.color("red")
 t.pu()
-<<<<<<< HEAD
-t.goto(-20, eleva_ao_quadrado(-20))
-t.pd()
-
-for x in range(-99, 101):
-    t.goto(x, eleva_ao_quadrado(x))
-
-
-
-
-
-
-
-
-
-
-
-
-=======
 t.goto(10 * -20, eleva_ao_quadrado(-20))
 t.pd()
 
@@ -185,6 +163,5 @@ for x in range(-7, 8):
     t.goto(40 * x, fn_cubica(x))
 
 limpar_tela()
->>>>>>> 5809dadad5d88cafe5188e72875fcff7335c2d16
 
 mainloop()
