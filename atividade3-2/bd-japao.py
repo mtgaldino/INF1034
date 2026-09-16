@@ -1,5 +1,7 @@
 from turtle import *
 
+import formasGeometricas
+
 t = Turtle()
 
 #Criando as funções
