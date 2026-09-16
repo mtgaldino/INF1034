@@ -2,6 +2,7 @@ from turtle import *
 
 t = Turtle()
 
+"""
 #Desenhando o fundo branco
 t.pu()
 t.goto(-225, 150)
@@ -15,6 +16,22 @@ for cont in range(2):
     t.fd(300)
     t.rt(90)
 t.end_fill()
+"""
+
+#Criando as funções
+def desenha_retangulo(x, y, larg, alt, cor):
+    t.pu()
+    t.goto(x, y)
+    t.seth(0)
+    t.pd()
+    t.color(cor)
+    t.begin_fill()
+    for cont in range(2):
+        t.fd(larg)
+        t.rt(90)
+        t.fd(alt)
+        t.rt(90)
+    t.end_fill()
 
 #Desenhando a faixa vermelha (topo)
 t.pu()

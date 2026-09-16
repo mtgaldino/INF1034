@@ -10,18 +10,37 @@ def desenha_retangulo(x, y, larg, alt, cor):
     t.pd()
     t.pensize(2)
     t.color(cor)
+    t.begin_fill()
     for cont in range(2):
         t.fd(larg)
         t.rt(90)
         t.fd(alt)
         t.rt(90)
     t.pensize(2)
+    t.end_fill()
+    
+def desenha_retangulo_contorno(x, y, larg, alt, cor):
+    t.pu()
+    t.goto(x, y)
+    t.seth(0)
+    t.pd()
+    t.pensize(2)
+    t.color(cor)
+    for cont in range(2):
+        t.fd(larg)
+        t.rt(90)
+        t.fd(alt)
+        t.rt(90)
+        t.pensize(2)
+    
 
 def desenha_bandeira_italia():
     desenha_retangulo(-225, 150, 150, 300, "green")
-    desenha_retangulo()
-    desenha_retangulo()
+    desenha_retangulo(-75, 150, 150, 300, "white")
+    desenha_retangulo(75, 150, 150, 300, "red")
+    desenha_retangulo_contorno(-225, 150, 450, 300, "black")
 
+"""
 #Desenhando a faixa verde
 t.pu()
 t.goto(-225, 150)
@@ -77,8 +96,10 @@ for cont in range(2):
     t.fd(300)
     t.rt(90)
 t.pensize(1)
+"""
 
 #Desenhando a Bandeira da Itália
+desenha_bandeira_italia()
 
 
 mainloop()
