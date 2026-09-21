@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cenário Os Simpsons - Pygame Web Simulation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Hachi+Maru+Pop&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        .simpsons-font {
+            font-family: 'Hachi Maru Pop', cursive, sans-serif;
+        }
+        canvas {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start p-4 md:p-8">
+
+    <header class="text-center mb-6 max-w-4xl">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-yellow-400 tracking-wide mb-2 flex items-center justify-center gap-3">
+            <span>🏠</span> Cenário Os Simpsons em Pygame
+        </h1>
+        <p class="text-gray-300 text-sm md:text-base">
+            Simulação interativa da atividade prática de Práticas de Programação.
+        </p>
+    </header>
+
+    <main class="w-full max-w-5xl flex flex-col items-center">
+        <div class="relative w-full aspect-video bg-black rounded-2xl overflow-hidden border-4 border-yellow-500 shadow-2xl mb-6">
+            <canvas id="pygameCanvas" width="1280" height="720" class="w-full h-full block"></canvas>
+            
+            <!-- Controls Overlay -->
+            <div class="absolute bottom-3 left-3 bg-slate-900/80 backdrop-blur-md px-4 py-2 rounded-lg border border-slate-700 text-xs text-gray-200 flex items-center gap-4">
+                <div><span class="font-bold text-yellow-400">Espaço:</span> Alternar Cor do Céu</div>
+                <div><span class="font-bold text-yellow-400">M:</span> Som "D'oh!"</div>
+                <div><span class="font-bold text-yellow-400">Clique:</span> Mover Homer</div>
+            </div>
+        </div>
+
+        <!-- Audio Control Toolbar -->
+        <div class="flex flex-wrap items-center justify-center gap-4 mb-8 bg-slate-800 p-4 rounded-xl border border-slate-700 w-full max-w-3xl">
+            <button id="toggleAudioBtn" class="bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold px-5 py-2.5 rounded-lg shadow-md transition-all flex items-center gap-2">
+                🔊 Tocar Tema dos Simpsons
+            </button>
+            <button id="dohBtn" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold px-4 py-2.5 rounded-lg border border-slate-500 transition-all">
+                🗣️ Efeito D'oh! (Tecla M)
+            </button>
+            <div class="text-xs text-slate-400">
+                Nuvem Animada (XP Extra Active: <span class="text-green-400 font-bold">100px/s</span>)
+            </div>
+        </div>
+
+        <section class="w-full bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl mb-12">
+            <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+                <h2 class="text-xl font-bold text-yellow-400 flex items-center gap-2">
+                    🐍 Código Python / Pygame Correspondente (Para Entrega)
+                </h2>
+                <button onclick="copyCode()" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-600 px-3 py-1.5 rounded-md transition-all">
+                    📋 Copiar Código
+                </button>
+            </div>
+            
+            <pre class="bg-slate-950 p-4 rounded-lg text-emerald-400 font-mono text-xs md:text-sm overflow-x-auto leading-relaxed border border-slate-800/80"><code id="pythonCode">from pygame import *
+
+init()
+screen = display.set_mode((1280, 720))
+display.set_caption("Casinha dos Simpsons - Trabalho Final")
+running = True
+clock = time.Clock()
+
+## 1. Carregamento de Recursos (Fontes, Imagens e Áudio)
+try:
+    fonte = font.Font("Simpsonfont.ttf", 65)
+except:
+    fonte = font.SysFont("Comic Sans MS", 65, bold=True)
+
+# Carrega e redimensiona o Homer
+homer_img = image.load("homer.png")
+homer_img = transform.scale(homer_img, (140, 220))
+
+# Carrega e redimensiona o Arbusto / Moita
+moita_img = image.load("moita.png")
+moita_img = transform.scale(moita_img, (220, 150))
+
+# Carregamento e Execução do Áudio de Fundo
+mixer.music.load("simpsons_theme.mp3")
+mixer.music.play(-1) # -1 faz a música rodar em loop infinito
+
+# Efeito Sonoro Específico (Sfx)
+doh_sfx = mixer.Sound("doh.mp3")
+
+## 2. Definição de Variáveis de Controle e Posições
+pos_nuvem_x = 300  # Posição X da Nuvem (Para a animação do EXTRA)
+velocidade_nuvem = 120 # Pixels por segundo
+background_color = "#87CEEB" # Azul Céu dos Simpsons
+texto_titulo = "Simpsons"
+
+## 3. Loop Principal do Jogo
+while running:
+    # Garante a taxa constante de 60 Quadros Por Segundo (FPS)
+    dt = clock.tick(60) / 1000.0
+
+    # Trata todos os Eventos
+    for ev in event.get():
+        if ev.type == QUIT:
+            running = False
+        
+        # Interação via Teclado
+        if ev.type == KEYDOWN:
+            if ev.key == K_SPACE:
+                # Altera a cor do céu ao pressionar espaço
+                background_color = "#F5B240" if background_color == "#87CEEB" else "#87CEEB"
+            elif ev.key == K_m:
+                doh_sfx.play()
+
+    ## 4. Atualização da Lógica (EXTRA - Nuvem Infinita)
+    pos_nuvem_x += velocidade_nuvem * dt
+    # Quando a nuvem sai totalmente da tela à direita (> 1280), teleporta para a esquerda (-250)
+    if pos_nuvem_x > 1280:
+        pos_nuvem_x = -250
+
+    ## 5. Renderização / Desenho do Cenário (Primitivas e Elementos)
+    
+    # 5.1 Fundo (Céu)
+    screen.fill(background_color)
+
+    # 5.2 Gramado (Retângulo Verde na base)
+    draw.rect(screen, "#38A169", (0, 520, 1280, 200))
+
+    # 5.3 Sol Radiante (Círculo e Linhas para os Raios)
+    centro_sol = (180, 150)
+    draw.circle(screen, "#FFD700", centro_sol, 55) # Centro do Sol
+    
+    # Desenho dos 8 Raios do Sol
+    raios = [
+        ((180, 75), (180, 45)),   # Cima
+        ((180, 225), (180, 255)), # Baixo
+        ((105, 150), (75, 150)),  # Esquerda
+        ((255, 150), (285, 150)), # Direita
+        ((127, 97), (105, 75)),   # Diag Sup Esq
+        ((233, 97), (255, 75)),   # Diag Sup Dir
+        ((127, 203), (105, 225)), # Diag Inf Esq
+        ((233, 203), (255, 225))  # Diag Inf Dir
+    ]
+    for inicio, fim in raios:
+        draw.line(screen, "#FFD700", inicio, fim, 5)
+
+    # 5.4 Nuvem Animada (Agrupamento de Círculos)
+    y_nuvem = 90
+    draw.circle(screen, "#FFFFFF", (int(pos_nuvem_x), y_nuvem), 45)
+    draw.circle(screen, "#FFFFFF", (int(pos_nuvem_x) + 40, y_nuvem - 15), 50)
+    draw.circle(screen, "#FFFFFF", (int(pos_nuvem_x) + 90, y_nuvem - 10), 45)
+    draw.circle(screen, "#FFFFFF", (int(pos_nuvem_x) + 130, y_nuvem), 40)
+
+    # 5.5 Texto Estilizado ("Simpsons") entre a nuvem e a árvore
+    texto_surface = fonte.render(texto_titulo, True, "#FFD700")
+    # Pequena sombra para destacá-lo
+    sombra_surface = fonte.render(texto_titulo, True, "#000000")
+    screen.blit(sombra_surface, (723, 163))
+    screen.blit(texto_surface, (720, 160))
+
+    # 5.6 Casa dos Simpsons (Primitivas com as cores oficiais)
+    # Telhado Triangular
+    draw.polygon(screen, "#BB5C38", [(250, 480), (550, 480), (400, 280)])
+    # Parede Principal Rosa/Bege
+    draw.rect(screen, "#E19B7C", (280, 480, 240, 170))
+    # Porta Marrom
+    draw.rect(screen, "#8B4513", (410, 530, 50, 120))
+    # Maçaneta Dourada
+    draw.circle(screen, "#FFD700", (420, 595), 4)
+    # Janela Azul Escuro
+    draw.rect(screen, "#1A2B56", (310, 530, 60, 60))
+
+    # 5.7 Árvore do Cenário
+    # Tronco Marrom
+    draw.rect(screen, "#654321", (980, 420, 60, 230))
+    # Copa Verde
+    draw.circle(screen, "#2E8B57", (1010, 380), 100)
+
+    # 5.8 Homer no Arbusto (Entre a Casa e a Árvore)
+    # Homer é desenhado PRIMEIRO (Fica atrás)
+    screen.blit(homer_img, (710, 440))
+    # Arbusto / Moita é desenhada DEPOIS (Cobre o Homer parcialmente)
+    screen.blit(moita_img, (670, 510))
+
+    ## 6. Atualiza o Display
+    display.update()
+
+quit()</code></pre>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('pygameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // State Variables
+        let posNuvemX = 300;
+        let speedNuvem = 2.0;
+        let skyColor = "#87CEEB";
+        let homerOffsetY = 0;
+        let homerTargetY = 0;
+        let isAudioPlaying = false;
+
+        // Audio Context (Synthesized Audio for Interactive Simulation)
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if(!audioCtx) audioCtx = new AudioContext();
+        }
+
+        // Play Simpsons Theme Melody Synthesizer
+        let themeInterval = null;
+        function playSimpsonsTheme() {
+            initAudio();
+            if(isAudioPlaying) {
+                clearInterval(themeInterval);
+                isAudioPlaying = false;
+                document.getElementById('toggleAudioBtn').innerText = "🔊 Tocar Tema dos Simpsons";
+                return;
+            }
+
+            isAudioPlaying = true;
+            document.getElementById('toggleAudioBtn').innerText = "⏸️ Pausar Música";
+
+            const notes = [261.63, 329.63, 369.99, 440.00, 392.00, 329.63, 261.63, 220.00]; // C E F# A G E C A
+            let noteIdx = 0;
+
+            themeInterval = setInterval(() => {
+                if(!isAudioPlaying) return;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(notes[noteIdx], audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+                noteIdx = (noteIdx + 1) % notes.length;
+            }, 300);
+        }
+
+        // Play Sound Effect "Doh"
+        function playDohSound() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(160, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(70, audioCtx.currentTime + 0.25);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.25);
+        }
+
+        document.getElementById('toggleAudioBtn').addEventListener('click', playSimpsonsTheme);
+        document.getElementById('dohBtn').addEventListener('click', playDohSound);
+
+        // Keyboard Controls
+        window.addEventListener('keydown', (e) => {
+            if(e.code === 'Space') {
+                skyColor = skyColor === "#87CEEB" ? "#F5B240" : "#87CEEB";
+            } else if(e.code === 'KeyM') {
+                playDohSound();
+            }
+        });
+
+        // Mouse click interactivity (Animate Homer)
+        canvas.addEventListener('click', () => {
+            homerTargetY = homerTargetY === 0 ? 40 : 0;
+            playDohSound();
+        });
+
+        function drawScene() {
+            // Update Positions (EXTRA 200XP Nuvem Infinita)
+            posNuvemX += speedNuvem;
+            if(posNuvemX > 1280) {
+                posNuvemX = -250;
+            }
+
+            // Smooth Homer movement
+            homerOffsetY += (homerTargetY - homerOffsetY) * 0.1;
+
+            // Clear Screen / Sky
+            ctx.fillStyle = skyColor;
+            ctx.fillRect(0, 0, 1280, 720);
+
+            // 1. Gramado
+            ctx.fillStyle = "#38A169";
+            ctx.fillRect(0, 520, 1280, 200);
+
+            // 2. Sol com Raios
+            ctx.fillStyle = "#FFD700";
+            ctx.beginPath();
+            ctx.arc(180, 150, 55, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Raios do sol
+            ctx.strokeStyle = "#FFD700";
+            ctx.lineWidth = 5;
+            const raios = [
+                [[180, 75], [180, 45]],
+                [[180, 225], [180, 255]],
+                [[105, 150], [75, 150]],
+                [[255, 150], [285, 150]],
+                [[127, 97], [105, 75]],
+                [[233, 97], [255, 75]],
+                [[127, 203], [105, 225]],
+                [[233, 203], [255, 225]]
+            ];
+            raios.forEach(([p1, p2]) => {
+                ctx.beginPath();
+                ctx.moveTo(p1[0], p1[1]);
+                ctx.lineTo(p2[0], p2[1]);
+                ctx.stroke();
+            });
+
+            // 3. Nuvem Animada
+            ctx.fillStyle = "#FFFFFF";
+            const yNuvem = 90;
+            const cloudCircles = [
+                [posNuvemX, yNuvem, 45],
+                [posNuvemX + 40, yNuvem - 15, 50],
+                [posNuvemX + 90, yNuvem - 10, 45],
+                [posNuvemX + 130, yNuvem, 40]
+            ];
+            cloudCircles.forEach(([x, y, r]) => {
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // 4. Texto Estilizado ("Simpsons")
+            ctx.font = "800 64px 'Hachi Maru Pop', cursive";
+            ctx.fillStyle = "rgba(0,0,0,0.4)";
+            ctx.fillText("Simpsons", 724, 164);
+            ctx.fillStyle = "#FFD700";
+            ctx.fillText("Simpsons", 720, 160);
+
+            // 5. Casa dos Simpsons
+            // Telhado
+            ctx.fillStyle = "#BB5C38";
+            ctx.beginPath();
+            ctx.moveTo(250, 480);
+            ctx.lineTo(550, 480);
+            ctx.lineTo(400, 280);
+            ctx.closePath();
+            ctx.fill();
+
+            // Parede Rosa/Bege
+            ctx.fillStyle = "#E19B7C";
+            ctx.fillRect(280, 480, 240, 170);
+
+            // Porta
+            ctx.fillStyle = "#8B4513";
+            ctx.fillRect(410, 530, 50, 120);
+            // Maçaneta
+            ctx.fillStyle = "#FFD700";
+            ctx.beginPath();
+            ctx.arc(420, 595, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Janela
+            ctx.fillStyle = "#1A2B56";
+            ctx.fillRect(310, 530, 60, 60);
+
+            // 6. Árvore
+            // Tronco
+            ctx.fillStyle = "#654321";
+            ctx.fillRect(980, 420, 60, 230);
+            // Copa
+            ctx.fillStyle = "#2E8B57";
+            ctx.beginPath();
+            ctx.arc(1010, 380, 100, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 7. Homer (Desenho em estilo vetorizado transparente para manter simulação idêntica)
+            const homerX = 710;
+            const homerY = 440 + homerOffsetY;
+            
+            // Corpo e Cabeça do Homer
+            ctx.save();
+            ctx.translate(homerX, homerY);
+            // Cabeça Amarela
+            ctx.fillStyle = "#FED41D";
+            ctx.beginPath();
+            ctx.ellipse(50, 40, 30, 40, 0, 0, Math.PI * 2);
+            ctx.fill();
+            // Olhos
+            ctx.fillStyle = "#FFFFFF";
+            ctx.beginPath();
+            ctx.arc(40, 35, 12, 0, Math.PI * 2);
+            ctx.arc(60, 35, 12, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#000000";
+            ctx.beginPath();
+            ctx.arc(42, 35, 3, 0, Math.PI * 2);
+            ctx.arc(58, 35, 3, 0, Math.PI * 2);
+            ctx.fill();
+            // Boca/Barba
+            ctx.fillStyle = "#D1B271";
+            ctx.beginPath();
+            ctx.ellipse(50, 60, 22, 14, 0, 0, Math.PI * 2);
+            ctx.fill();
+            // Camisa Branca
+            ctx.fillStyle = "#FFFFFF";
+            ctx.beginPath();
+            ctx.moveTo(15, 85);
+            ctx.lineTo(85, 85);
+            ctx.lineTo(95, 160);
+            ctx.lineTo(5, 160);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+
+            // 8. Arbusto / Moita (Fica na FRENTE do Homer)
+            const bushX = 660;
+            const bushY = 510;
+            ctx.fillStyle = "#2D6A4F";
+            ctx.beginPath();
+            ctx.arc(bushX + 40, bushY + 50, 45, 0, Math.PI * 2);
+            ctx.arc(bushX + 90, bushY + 30, 55, 0, Math.PI * 2);
+            ctx.arc(bushX + 150, bushY + 45, 50, 0, Math.PI * 2);
+            ctx.arc(bushX + 100, bushY + 70, 60, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Textura do arbusto
+            ctx.strokeStyle = "#1B4332";
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            requestAnimationFrame(drawScene);
+        }
+
+        // Copiar código Python
+        function copyCode() {
+            const codeText = document.getElementById('pythonCode').innerText;
+            const textarea = document.createElement('textarea');
+            textarea.value = codeText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('Código Python copiado para a área de transferência!');
+        }
+
+        // Iniciar Simulação
+        drawScene();
+    </script>
+</body>
+</html>
