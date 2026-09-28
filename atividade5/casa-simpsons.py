@@ -1,22 +1,27 @@
 from pygame import *
+import os
 
 init()
 screen = display.set_mode((1280, 720))
 running = True
 clock = time.Clock()
 
-# --- Carregamento de Recursos ---
-fonte = font.Font("Simpsonfont-DEMO.ttf", 65)
+PASTA_BASE = (os.path.dirname(__file__))
 
-homer_img = image.load("homer.png")
+# --- Carregamento de Recursos ---
+fonte = font.Font(os.path.join(PASTA_BASE, "Simpsonfont-DEMO.ttf"), 65)
+
+homer_img = image.load(os.path.join(PASTA_BASE, "homer.png"))
 homer_img = transform.scale(homer_img, (140, 220))
 
-moita_img = image.load("moita.png")
+moita_img = image.load(os.path.join(PASTA_BASE, "moita.png"))
 moita_img = transform.scale(moita_img, (220, 150))
 
-abertura = mixer.Sound("abertura.mp3")
+mixer.music.load(os.path.join(PASTA_BASE, "abertura.wav"))
+mixer.music.set_volume(0.5)
+mixer.music.play(loops=-1)
 
-doh_sfx = mixer.Sound("doh.mp3")
+doh_sfx = mixer.Sound(os.path.join(PASTA_BASE, "doh.wav"))
 
 pos_nuvem_x = 300  
 velocidade_nuvem = 120 
