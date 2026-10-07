@@ -1,0 +1,136 @@
+from pygame import *
+import os
+
+init()
+screen = display.set_mode((1280, 720))
+running = True
+clock = time.Clock()
+
+PASTA_BASE = (os.path.dirname(__file__))
+
+# --- Carregamento de Recursos ---
+fonte = font.Font(os.path.join(PASTA_BASE, "Simpsonfont-DEMO.ttf"), 65)
+
+homer_img = image.load(os.path.join(PASTA_BASE, "homer.png"))
+homer_img = transform.scale(homer_img, (140, 220))
+
+moita_img = image.load(os.path.join(PASTA_BASE, "moita.png"))
+moita_img = transform.scale(moita_img, (220, 150))
+
+mixer.music.load(os.path.join(PASTA_BASE, "abertura.wav"))
+mixer.music.set_volume(0.3)
+mixer.music.play(loops=-1)
+
+doh_sfx = mixer.Sound(os.path.join(PASTA_BASE, "doh.wav"))
+
+pos_nuvem_x = 300  
+velocidade_nuvem = 120
+
+pos_sol_x = 180
+pos_sol_y = 150
+velocidade_sol = 120
+ 
+background_color = "#87CEEB" 
+texto_titulo = "Simpsons"
+
+
+# --- Loop Principal do Jogo ---
+while running:
+    dt = clock.tick(60) / 1000.0
+    
+    #Explicação: Estarei pegando a posição do mouse no eixo X (esquerda e direita) e as das teclas no eixo Y (pra cima e pra baixo)
+    mouse_x, mouse_y = mouse.get_pos()
+    pos_sol_x = mouse_x
+    
+    teclas = key.get_pressed()
+    
+    if teclas[K_UP]:
+        pos_sol_y -= velocidade_sol * dt
+    if teclas[K_DOWN]:
+        pos_sol_y +=  velocidade_sol * dt
+        
+    """
+    if teclas[K_LEFT]:
+        pos_sol_x -= velocidade_sol * dt
+    if teclas[K_RIGHT]:
+        pos_sol_x += velocidade_sol * dt
+    """
+    
+    raio_sol = 55
+    pos_sol_x = max(raio_sol, min(pos_sol_x, 1280 - raio_sol))
+    pos_sol_y = max(raio_sol, min(pos_sol_y, 520 - raio_sol))
+    
+    for ev in event.get():
+        if ev.type == QUIT:
+            running = False
+        
+        if ev.type == KEYDOWN:
+            if ev.key == K_SPACE:
+                background_color = "#F5B240" if background_color == "#87CEEB" else "#87CEEB"
+            elif ev.key == K_m:
+                doh_sfx.play()
+                
+    # --- Funcionamento da Lógica da Nuvem (mudança: deixa de ser infinito e passa a rebater nas paredes) ---
+    
+    pos_nuvem_x += velocidade_nuvem * dt
+    
+    if pos_nuvem_x > 1280 - 260:
+        velocidade_nuvem = -velocidade_nuvem
+    elif pos_nuvem_x < 0:
+        velocidade_nuvem = -velocidade_nuvem
+
+    
+    # --- Desenhos do cenário ---
+    
+    # Fundo
+    screen.fill(background_color)
+
+    # Gramado
+    draw.rect(screen, "#38A169", (0, 520, 1280, 200))
+
+    # Sol
+    centro_sol = (int(pos_sol_x), int(pos_sol_y))
+    draw.circle(screen, "#FFD700", centro_sol, raio_sol)
+    
+    raios = [
+        ((180, 75), (180, 45)),   # Cima
+        ((180, 225), (180, 255)), # Baixo
+        ((105, 150), (75, 150)),  # Esquerda
+        ((255, 150), (285, 150)), # Direita
+        ((127, 97), (105, 75)),   # Diag Sup Esq
+        ((233, 97), (255, 75)),   # Diag Sup Dir
+        ((127, 203), (105, 225)), # Diag Inf Esq
+        ((233, 203), (255, 225))  # Diag Inf Dir
+    ]
+    for inicio, fim in raios:
+        draw.line(screen, "#FFD700", inicio, fim, 5)
+
+    # --- Animação da nuvem ---
+    y_nuvem = 90
+    draw.circle(screen, "#FFFFFF", (int(pos_nuvem_x), y_nuvem), 45)
+    draw.circle(screen, "#FFFFFF", (int(pos_nuvem_x) + 40, y_nuvem - 15), 50)
+    draw.circle(screen, "#FFFFFF", (int(pos_nuvem_x) + 90, y_nuvem - 10), 45)
+    draw.circle(screen, "#FFFFFF", (int(pos_nuvem_x) + 130, y_nuvem), 40)
+
+    # --- Título Simpsons ---
+    texto_surface = fonte.render(texto_titulo, True, "#FFD700")
+    sombra_surface = fonte.render(texto_titulo, True, "#000000")
+    screen.blit(sombra_surface, (723, 163))
+    screen.blit(texto_surface, (720, 160))
+
+    # --- Casa dos Simpsons --- 
+    draw.polygon(screen, "#BB5C38", [(250, 480), (550, 480), (400, 280)])
+    draw.rect(screen, "#E19B7C", (280, 480, 240, 170))
+    draw.rect(screen, "#8B4513", (410, 530, 50, 120))
+    draw.circle(screen, "#FFD700", (420, 595), 4)
+    draw.rect(screen, "#1A2B56", (310, 530, 60, 60))
+
+    # --- Árvore ---
+    draw.rect(screen, "#654321", (980, 420, 60, 230))
+    draw.circle(screen, "#2E8B57", (1010, 380), 100)
+
+    # --- Homer e Moita ---
+    screen.blit(homer_img, (710, 440))
+    screen.blit(moita_img, (670, 510))
+
+    display.update()
