@@ -1,10 +1,6 @@
 def valida_email(email):
     return email[-8:] == "@puc.com"
 
-"""
-print(valida_email("lfbicalho@hotmail.com"))
-"""
-
 def possuiMaiuscula(palavra):
     for letra in palavra:
         if 'A' <= letra <= 'Z':
@@ -23,12 +19,6 @@ def possuiNumero(palavra):
             return True
     return False
 
-"""
-print(possuiMaiuscula("abc@1234"))
-print(possuiMinuscula("ABC@1234"))
-print(possuiMinuscula("Abc@1234"))
-"""
-
 def valida_senha(senha):
     check_tamanho = len(senha) >= 8
     check_maiuscula = possuiMaiuscula(senha)
@@ -36,34 +26,63 @@ def valida_senha(senha):
     check_numero = possuiNumero(senha)
     return check_tamanho and check_maiuscula and check_minuscula and check_numero
 
-"""
-print("\nTestando a 'valida_senha':")
-print(valida_senha("ABc@1234"))
-print(valida_senha("BCA@1234"))
-print(valida_senha("def@1234"))
-print(valida_senha("def@abcd"))
-print(valida_senha("Def@123"))
-"""
+def desloca_char(char, deslocamento):
+    if 'A' <= char <= 'Z':
+        ref = ord('A')
+        qtd = 26
+    elif 'a' <= char <= 'z':
+        ref = ord('a')
+        qtd = 26
+    elif '0' <= char <= '9':
+        ref = ord('0')
+        qtd = 10
+    else:
+        return char                                  
+    pos = ord(char) - ref                            
+    pos_cesar = (pos + deslocamento) % qtd           
+    return chr(ref + pos_cesar)
 
 def criptografa_senha(senha):
     senha_cripto = ""
     for char in senha:
-        if char.isdigit():
-            pass
-        elif 'A' <= char <= 'Z':
-            ref = ord('A') 
-            ascii_char = ord(char) 
-            pos_alpha = ascii_char - ref 
-            pos_cesar = pos_alpha + 3 
-            pos_cesar = pos_cesar % 26 
-            letra_cesar = chr(ref + pos_cesar) 
-            senha_cripto += letra_cesar
-        elif 'a' <= char <= 'z':
-            pass
-        else:
-            senha_cripto += char
+        senha_cripto += desloca_char(char, 3)        
     return senha_cripto
 
-"""
-print(criptografa_senha("ZUMBIDO@"))
-"""
+def descriptografa_senha(senha_cripto):
+    senha = ""
+    for char in senha_cripto:
+        senha += desloca_char(char, -3)              
+    return senha
+
+if __name__ == "__main__":
+    
+    assert valida_email("aluno@puc.com") == True
+    assert valida_email("aluno@gmail.com") == False
+    assert valida_email("aluno@puc.com.br") == False
+
+    assert valida_senha("Abcdef12") == True
+    assert valida_senha("abcdef12") == False    
+    assert valida_senha("ABCDEF12") == False    
+    assert valida_senha("Abcdefgh") == False    
+    assert valida_senha("Abc123") == False      
+    
+    assert criptografa_senha("abc") == "def"
+    assert criptografa_senha("ABC") == "DEF"
+    assert criptografa_senha("123") == "456"
+    assert criptografa_senha("xyz") == "abc"    
+    assert criptografa_senha("XYZ") == "ABC"    
+    assert criptografa_senha("789") == "012"    
+    assert criptografa_senha("a!b") == "d!e"    
+    assert criptografa_senha("Abc123") == "Def456"
+    
+    assert descriptografa_senha("def") == "abc"
+    assert descriptografa_senha("abc") == "xyz"
+    assert descriptografa_senha("012") == "789"
+    assert descriptografa_senha(criptografa_senha("Senha123")) == "Senha123"
+
+    print("Todos os testes passaram!")
+    senha = "Senha123"
+    cripto = criptografa_senha(senha)
+    print("Senha original:       ", senha)
+    print("Senha criptografada:  ", cripto)
+    print("Senha descriptografada:", descriptografa_senha(cripto))
