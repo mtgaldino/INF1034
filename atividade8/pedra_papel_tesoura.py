@@ -8,7 +8,6 @@ def determinar_vencedor(jogador, computador):
     if jogador == computador:
         return "empate"
     
-    # Condições em que o jogador ganha
     if (jogador == "pedra" and computador == "tesoura") or \
        (jogador == "tesoura" and computador == "papel") or \
        (jogador == "papel" and computador == "pedra"):
@@ -26,7 +25,6 @@ def jogar_pedra_papel_tesoura():
     while jogando:
         print(f"\nPlacar: Você {placar_jogador} x {placar_computador} Computador")
         
-        # Leitura e validação simples
         escolha_usuario = input("Escolha (pedra, papel, tesoura): ").strip().lower()
         if escolha_usuario not in ["pedra", "papel", "tesoura"]:
             print("Opção inválida! Tente novamente.")
